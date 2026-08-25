@@ -2,33 +2,445 @@
 <html lang="en" manifest="cache.appcache">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ps4 jailbreak</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>RAW GAME &middot; PS4 WebKit Loader</title>
 <style>
-  html, body { margin:0; padding:0; background:#0b0d10; color:#c8ced8;
-               font:15px/1.45 "Segoe UI", system-ui, sans-serif; }
-  #wrap { padding:16px 18px; }
-  #state { font-size:22px; font-weight:700; margin:0 0 6px; }
-  #det { font-size:13px; color:#8b95a3; margin:0 0 4px; }
-  #det b { color:#c8ced8; font-weight:600; }
-  #cache { font-size:12px; color:#5c6672; margin:0 0 10px; min-height:14px; }
-  #cache.cacheok { color:#7fd0a0; }
-  .ok { color:#7fd0a0; } .bad { color:#d08a7f; } .warn { color:#d8c07f; }
-  #brand { text-align:center; padding:8px 10px; background:#0e1116;
-           border-bottom:1px solid #1e2732; }
-  #brand img { width:28px; height:28px; margin-right:8px; border-radius:50%;
-               vertical-align:middle; }
-  #brand b { font-size:15px; font-weight:700; letter-spacing:.14em;
-             color:#e6ebf2; vertical-align:middle; }
+  :root {
+    --bg-primary: #07090e;
+    --card-bg: rgba(15, 20, 32, 0.82);
+    --card-border: rgba(255, 255, 255, 0.08);
+    --card-hover-border: rgba(0, 229, 255, 0.35);
+    --text-main: #f0f4f8;
+    --text-muted: #8b9bb4;
+    --text-dim: #546274;
+    --accent-cyan: #00e5ff;
+    --accent-purple: #8a2be2;
+    --accent-ok: #00f5a0;
+    --accent-bad: #ff3366;
+    --accent-warn: #ffb703;
+    --glow-cyan: 0 0 25px rgba(0, 229, 255, 0.35);
+    --glow-ok: 0 0 25px rgba(0, 245, 160, 0.35);
+    --glow-bad: 0 0 25px rgba(255, 51, 102, 0.35);
+    --glow-warn: 0 0 25px rgba(255, 183, 3, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background: var(--bg-primary);
+    background-image:
+      radial-gradient(circle at 15% 15%, rgba(0, 229, 255, 0.12) 0%, transparent 40%),
+      radial-gradient(circle at 85% 85%, rgba(138, 43, 226, 0.14) 0%, transparent 45%),
+      radial-gradient(circle at 50% 50%, rgba(20, 28, 45, 0.6) 0%, #07090e 100%);
+    background-attachment: fixed;
+    color: var(--text-main);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* Header Branding */
+  #brand {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 28px;
+    background: rgba(11, 15, 25, 0.85);
+    border-bottom: 1px solid var(--card-border);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .brand-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .brand-logo-wrap {
+    position: relative;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #00e5ff 0%, #7000ff 100%);
+    border-radius: 10px;
+    box-shadow: var(--glow-cyan);
+  }
+
+  .brand-logo-wrap svg {
+    width: 22px;
+    height: 22px;
+    fill: #ffffff;
+  }
+
+  .brand-text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .brand-title {
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+    background: linear-gradient(90deg, #ffffff, #00e5ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase;
+  }
+
+  .brand-subtitle {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .brand-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: rgba(0, 229, 255, 0.08);
+    border: 1px solid rgba(0, 229, 255, 0.25);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent-cyan);
+    letter-spacing: 0.05em;
+  }
+
+  .pulse-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--accent-cyan);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--accent-cyan);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(0.95); opacity: 0.8; box-shadow: 0 0 0 0 rgba(0, 229, 255, 0.7); }
+    70% { transform: scale(1.15); opacity: 1; box-shadow: 0 0 0 8px rgba(0, 229, 255, 0); }
+    100% { transform: scale(0.95); opacity: 0.8; box-shadow: 0 0 0 0 rgba(0, 229, 255, 0); }
+  }
+
+  /* Main Container */
+  #wrap {
+    max-width: 900px;
+    margin: 32px auto;
+    padding: 0 20px 40px;
+  }
+
+  /* Main Hero Status Box */
+  .status-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .status-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+  }
+
+  .status-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+  }
+
+  .status-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--accent-cyan);
+    text-transform: uppercase;
+  }
+
+  #state {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    margin: 0 0 16px;
+    color: #ffffff;
+    transition: color 0.3s ease;
+  }
+
+  #state.ok { color: var(--accent-ok); text-shadow: var(--glow-ok); }
+  #state.warn { color: var(--accent-warn); text-shadow: var(--glow-warn); }
+  #state.bad { color: var(--accent-bad); text-shadow: var(--glow-bad); }
+
+  .ok { color: var(--accent-ok); }
+  .bad { color: var(--accent-bad); }
+  .warn { color: var(--accent-warn); }
+
+  /* Details Card */
+  #det {
+    background: rgba(8, 12, 20, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 18px;
+  }
+
+  #det b {
+    color: #ffffff;
+    font-weight: 600;
+    padding: 2px 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    display: inline-block;
+    margin: 0 2px;
+  }
+
+  /* Cache Status Indicator */
+  .cache-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-bottom: 22px;
+  }
+
+  .cache-icon {
+    width: 16px;
+    height: 16px;
+    fill: var(--text-dim);
+    flex-shrink: 0;
+  }
+
+  #cache {
+    font-size: 13px;
+    color: var(--text-dim);
+    font-weight: 500;
+    min-height: 18px;
+  }
+
+  #cache.cacheok {
+    color: var(--accent-ok);
+    font-weight: 600;
+  }
+
+  /* Action Trigger / PS4 Controller Prompt */
+  .ps4-prompt {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 15px;
+    background: linear-gradient(135deg, rgba(0, 229, 255, 0.07), rgba(112, 0, 255, 0.07));
+    border: 1px solid rgba(0, 229, 255, 0.25);
+    border-radius: 14px;
+    text-align: center;
+    font-weight: 600;
+    color: var(--text-main);
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease;
+  }
+
+  .ps4-prompt:hover, .ps4-prompt:active {
+    background: linear-gradient(135deg, rgba(0, 229, 255, 0.15), rgba(112, 0, 255, 0.15));
+    border-color: var(--accent-cyan);
+    box-shadow: var(--glow-cyan);
+  }
+
+  .ps-btn-cross {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    background: #003791;
+    border-radius: 50%;
+    color: #4da6ff;
+    font-weight: 900;
+    font-size: 15px;
+    box-shadow: 0 0 10px rgba(0, 110, 255, 0.5);
+    border: 1.5px solid rgba(77, 166, 255, 0.6);
+  }
+
+  /* Quick Navigation / Settings Grid */
+  .grid-section {
+    margin-top: 26px;
+  }
+
+  .section-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-title::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--card-border);
+  }
+
+  .quick-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+  }
+
+  .quick-btn {
+    display: flex;
+    flex-direction: column;
+    padding: 14px 16px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    color: var(--text-main);
+    text-decoration: none;
+    transition: all 0.25s ease;
+  }
+
+  .quick-btn:hover {
+    border-color: var(--card-hover-border);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .quick-btn-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+
+  .quick-btn-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .quick-btn-tag {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--accent-cyan);
+    font-weight: 600;
+  }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    margin-top: 32px;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
 </style>
 </head>
 <body>
-<div id="brand"><img src="logo_raw.png" alt="" width="28" height="28"><b>RAW GAME</b></div>
-<div id="wrap">
-  <div id="state">detecting firmware...</div>
-  <div id="det"></div>
-  <div id="cache"></div>
-</div>
+
+<header id="brand">
+  <div class="brand-left">
+    <div class="brand-logo-wrap">
+      <svg viewBox="0 0 24 24">
+        <path d="M19.5 6H4.5C2.57 6 1 7.57 1 9.5v5c0 1.93 1.57 3.5 3.5 3.5h1.6l1.2-2.4c.3-.6.92-1 1.6-1h6.2c.68 0 1.3.4 1.6 1l1.2 2.4h1.6c1.93 0 3.5-1.57 3.5-3.5v-5c0-1.93-1.57-3.5-3.5-3.5zM7.5 12h-1v1c0 .28-.22.5-.5.5s-.5-.22-.5-.5v-1h-1c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h1v-1c0-.28.22-.5.5-.5s.5.22.5.5v1h1c.28 0 .5.22.5.5s-.22.5-.5.5zm10-1.5c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-2 3c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm0-3c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm2 3c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/>
+      </svg>
+    </div>
+    <div class="brand-text">
+      <span class="brand-title">RAW GAME</span>
+      <span class="brand-subtitle">PS4 WebKit Suite</span>
+    </div>
+  </div>
+  <div class="brand-badge">
+    <span class="pulse-dot"></span>
+    <span>SYSTEM ACTIVE</span>
+  </div>
+</header>
+
+<main id="wrap">
+  <div class="status-card">
+    <div class="status-header">
+      <span class="status-label">Exploit Status</span>
+    </div>
+    
+    <div id="state">detecting firmware...</div>
+    <div id="det"></div>
+    
+    <div class="cache-container">
+      <svg class="cache-icon" viewBox="0 0 24 24">
+        <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4 0-2.05 1.53-3.76 3.56-3.97l1.07-.11.5-.95C8.08 7.14 9.94 6 12 6c2.62 0 4.88 1.86 5.39 4.43l.3 1.5 1.53.11c1.56.1 2.78 1.41 2.78 2.96 0 1.65-1.35 3-3 3z"/>
+      </svg>
+      <div id="cache"></div>
+    </div>
+
+    <div class="ps4-prompt" id="action-prompt">
+      <span class="ps-btn-cross">&#10005;</span>
+      <span>Press <b>✕</b> or tap screen to interact</span>
+    </div>
+  </div>
+
+  <section class="grid-section">
+    <div class="section-title">Manual Chains & Options</div>
+    <div class="quick-links">
+      <a class="quick-btn" href="?bug=lapse">
+        <div class="quick-btn-title">
+          <span>Lapse Chain</span>
+          <span class="quick-btn-tag">&le; 12.02</span>
+        </div>
+        <div class="quick-btn-desc">Force execution of WebKit Lapse exploit.</div>
+      </a>
+      
+      <a class="quick-btn" href="?bug=poops">
+        <div class="quick-btn-title">
+          <span>Poops Chain</span>
+          <span class="quick-btn-tag">&ge; 12.50</span>
+        </div>
+        <div class="quick-btn-desc">Force execution of WebKit Poops exploit.</div>
+      </a>
+
+      <a class="quick-btn" href="?verbose=1">
+        <div class="quick-btn-title">
+          <span>Verbose Mode</span>
+          <span class="quick-btn-tag">Debug</span>
+        </div>
+        <div class="quick-btn-desc">Run with detailed telemetry & console logging.</div>
+      </a>
+    </div>
+  </section>
+
+  <footer>
+    RAW GAME WebKit Loader &bull; Built for PlayStation 4
+  </footer>
+</main>
 
 <script>
 (function () {
@@ -73,7 +485,10 @@
 
     function waitForTap(msg, action) {
         setState(msg, "warn");
+        var fired = false;
         function fire() {
+            if (fired) return;
+            fired = true;
             window.removeEventListener("click", fire);
             window.removeEventListener("keydown", fire);
             action();
