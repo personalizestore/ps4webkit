@@ -1,0 +1,4 @@
+date	size'/'remotesize	flags(request:Update,Range state:File response:Modified,Chunked,gZipped)	statuscode	status ('servermsg')	MIME	Etag|Date	URL	localfile	(from URL)
+16:50:14	355/355	---M--	404	error ('Not%20Found')	text/html	date:Tue,%2025%20Aug%202026%2019:50:14%20GMT	https://raw-game.com/robots.txt		(from )
+16:50:14	5347/5347	---M--	200	added ('OK')	text/html	date:Tue,%2025%20Aug%202026%2018:13:08%20GMT	https://raw-game.com/zrm/	C:/Meus%20Sites/PS4-webkit/raw-game.com/zrm/index.html	(from )
+16:50:15	14318/14318	---M--	200	added ('OK')	image/png	date:Tue,%2025%20Aug%202026%2018:13:08%20GMT	https://raw-game.com/zrm/logo_raw.png	C:/Meus%20Sites/PS4-webkit/raw-game.com/zrm/logo_raw.png	(from https://raw-game.com/zrm/)
