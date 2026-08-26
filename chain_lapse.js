@@ -3811,6 +3811,9 @@ function makeRpc(worker) {
                     : jailbroken ? "ROOT -- NO REBOOT NEEDED"
                     : "REPAIRED -- NO REBOOT NEEDED";
                 stateEl.className = "ok";
+                if (typeof window.showPayloadMenu === "function") {
+                    setTimeout(window.showPayloadMenu, 1000);
+                }
             } catch (e) { }
         }
     }

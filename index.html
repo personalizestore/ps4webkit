@@ -357,6 +357,225 @@
     font-weight: 600;
   }
 
+  /* Payload Menu Overlay & Cards */
+  #payload-menu-container {
+    margin-top: 24px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    animation: fadeIn 0.4s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .payload-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--card-border);
+    margin-bottom: 18px;
+  }
+
+  .payload-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .payload-header-icon {
+    width: 38px;
+    height: 38px;
+    background: linear-gradient(135deg, #00e5ff 0%, #7000ff 100%);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    box-shadow: var(--glow-cyan);
+  }
+
+  .payload-header-title {
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #ffffff;
+    text-transform: uppercase;
+  }
+
+  .payload-header-subtitle {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .payload-config-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .config-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.35);
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--card-border);
+  }
+
+  .config-item label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  .config-item input {
+    background: transparent;
+    border: none;
+    color: var(--accent-cyan);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    width: 90px;
+    outline: none;
+  }
+
+  .custom-payload-zone {
+    margin-bottom: 18px;
+  }
+
+  .upload-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px;
+    background: linear-gradient(135deg, rgba(0, 229, 255, 0.08), rgba(112, 0, 255, 0.08));
+    border: 1px dashed rgba(0, 229, 255, 0.35);
+    border-radius: 12px;
+    color: var(--text-main);
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+
+  .upload-btn:hover {
+    background: linear-gradient(135deg, rgba(0, 229, 255, 0.15), rgba(112, 0, 255, 0.15));
+    border-color: var(--accent-cyan);
+    box-shadow: var(--glow-cyan);
+  }
+
+  .payload-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 14px;
+  }
+
+  .payload-card {
+    background: rgba(8, 12, 20, 0.7);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.25s ease;
+  }
+
+  .payload-card:hover {
+    border-color: var(--card-hover-border);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  }
+
+  .payload-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .payload-icon { font-size: 20px; }
+
+  .payload-tag {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(0, 229, 255, 0.1);
+    color: var(--accent-cyan);
+    border: 1px solid rgba(0, 229, 255, 0.2);
+  }
+
+  .payload-name {
+    font-size: 15px;
+    font-weight: 800;
+    color: #ffffff;
+    margin-bottom: 4px;
+  }
+
+  .payload-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.4;
+    margin-bottom: 14px;
+    flex: 1;
+  }
+
+  .payload-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 9px;
+    background: rgba(0, 229, 255, 0.12);
+    border: 1px solid rgba(0, 229, 255, 0.3);
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .payload-btn:hover {
+    background: var(--accent-cyan);
+    color: #07090e;
+    box-shadow: var(--glow-cyan);
+  }
+
+  .btn-toggle-payloads {
+    background: rgba(0, 229, 255, 0.12);
+    border: 1px solid rgba(0, 229, 255, 0.3);
+    border-radius: 6px;
+    color: var(--accent-cyan);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .btn-toggle-payloads:hover {
+    background: var(--accent-cyan);
+    color: #07090e;
+  }
+
   /* Footer */
   footer {
     text-align: center;
@@ -380,9 +599,12 @@
       <span class="brand-subtitle">PS4 WebKit Suite</span>
     </div>
   </div>
-  <div class="brand-badge">
-    <span class="pulse-dot"></span>
-    <span>SYSTEM ACTIVE</span>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <button class="btn-toggle-payloads" onclick="window.showPayloadMenu()">⚡ PAYLOADS</button>
+    <div class="brand-badge">
+      <span class="pulse-dot"></span>
+      <span>SYSTEM ACTIVE</span>
+    </div>
   </div>
 </header>
 
@@ -427,6 +649,14 @@
         <div class="quick-btn-desc">Force execution of WebKit Poops exploit.</div>
       </a>
 
+      <a class="quick-btn" href="javascript:void(0)" onclick="window.showPayloadMenu()">
+        <div class="quick-btn-title">
+          <span>Payload Injector</span>
+          <span class="quick-btn-tag">Sender</span>
+        </div>
+        <div class="quick-btn-desc">Send GoldHEN, FTP, Linux, or custom .BIN/.ELF payloads.</div>
+      </a>
+
       <a class="quick-btn" href="?verbose=1">
         <div class="quick-btn-title">
           <span>Verbose Mode</span>
@@ -437,10 +667,47 @@
     </div>
   </section>
 
+  <!-- Payload Menu Section -->
+  <div id="payload-menu-container" style="display:none;">
+    <div class="payload-header">
+      <div class="payload-header-left">
+        <div class="payload-header-icon">⚡</div>
+        <div>
+          <div class="payload-header-title">Painel de Injeção de Payloads</div>
+          <div class="payload-header-subtitle">Envie payloads diretamente para o BinLoader (Porta 9020/9021)</div>
+        </div>
+      </div>
+      <div class="payload-config-bar">
+        <div class="config-item">
+          <label>IP:</label>
+          <input type="text" id="target-ip" value="127.0.0.1">
+        </div>
+        <div class="config-item">
+          <label>Porta:</label>
+          <input type="number" id="target-port" value="9020">
+        </div>
+      </div>
+    </div>
+
+    <div class="custom-payload-zone">
+      <input type="file" id="custom-payload-file" accept=".bin,.elf" style="display:none;">
+      <button class="upload-btn" onclick="document.getElementById('custom-payload-file').click()">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+          <path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z"/>
+        </svg>
+        <span>Carregar e Injetar Arquivo Próprio (.BIN / .ELF)</span>
+      </button>
+    </div>
+
+    <div class="payload-grid"></div>
+  </div>
+
   <footer>
     RAW GAME WebKit Loader &bull; Built for PlayStation 4
   </footer>
 </main>
+
+<script src="payload_injector.js"></script>
 
 <script>
 (function () {

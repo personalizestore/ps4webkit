@@ -2449,6 +2449,13 @@ let allDone = false;
               : triplets ? "FAILED IN leak_kqueue (triple free was OK) -- REBOOT"
               : committed ? "FAILED IN triple free -- REBOOT"
               : "no commit", allDone ? "ok" : kv ? "warn" : "bad");
+        if (allDone || (kv && kpatched)) {
+            try {
+                if (typeof window.showPayloadMenu === "function") {
+                    setTimeout(window.showPayloadMenu, 1000);
+                }
+            } catch (e) { }
+        }
     } catch (e) {
         mark("STEP10-FAILED", (e && e.message) ? e.message : String(e));
         state("FAILED -- see log", "bad");
