@@ -1,4 +1,4 @@
-﻿// RAW GAME - PS4 Payload Injector & Sender Module
+// RAW GAME - PS4 Payload Injector & Sender Module
 // Fully optimized for PS4 WebKit (Solid rendering, no backdrop-filter glitches)
 
 (function () {
@@ -69,6 +69,15 @@
             desc: "Boot Linux distribution directly on PS4 from USB installation",
             file: "payloads/linux.bin",
             icon: "🐧",
+            port: 9020
+        },
+        {
+            id: "disable_updates",
+            name: "Disable Updates",
+            tag: "Blocker",
+            desc: "Bloqueia e desativa atualizações automáticas de firmware do PS4",
+            file: "payloads/disable-updates.bin",
+            icon: "🛡️",
             port: 9020
         },
         {
