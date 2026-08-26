@@ -485,20 +485,31 @@
   }
 
   .payload-card {
-    background: rgba(8, 12, 20, 0.7);
+    background: rgba(8, 12, 20, 0.75);
     border: 1px solid var(--card-border);
     border-radius: 14px;
     padding: 16px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    transition: all 0.25s ease;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    transition: all 0.2s ease;
   }
 
-  .payload-card:hover {
-    border-color: var(--card-hover-border);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  .payload-card:hover, .payload-card:focus {
+    border-color: var(--accent-cyan);
+    outline: 2px solid var(--accent-cyan);
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.35);
+  }
+
+  .payload-card:active {
+    transform: scale(0.98);
+    opacity: 0.8;
   }
 
   .payload-card-top {
@@ -548,11 +559,11 @@
     color: #ffffff;
     font-size: 12px;
     font-weight: 700;
-    cursor: pointer;
+    pointer-events: none;
     transition: all 0.2s ease;
   }
 
-  .payload-btn:hover {
+  .payload-card:hover .payload-btn, .payload-card:focus .payload-btn {
     background: var(--accent-cyan);
     color: #07090e;
     box-shadow: var(--glow-cyan);
