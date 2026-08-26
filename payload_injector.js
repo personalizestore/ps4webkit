@@ -1,5 +1,5 @@
 ﻿// RAW GAME - PS4 Payload Injector & Sender Module
-// Fully optimized for PS4 WebKit Controller, Click & Touch input
+// Fully optimized for PS4 WebKit (Solid rendering, no backdrop-filter glitches)
 
 (function () {
     "use strict";
@@ -82,7 +82,7 @@
         }
     ];
 
-    // Toast Notification System
+    // Toast Notification System - PS4 WebKit Safe
     function showToast(message, type, duration) {
         if (!type) type = "info";
         if (duration === undefined) duration = 4500;
@@ -103,22 +103,15 @@
         else if (type === "bad" || type === "error") { borderColor = "#ff3366"; icon = "❌"; }
         else if (type === "warn") { borderColor = "#ffb703"; icon = "⚠️"; }
 
-        toast.style.cssText = "background: rgba(12, 16, 26, 0.96); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1.5px solid " + borderColor + "; box-shadow: 0 8px 30px rgba(0,0,0,0.7); color: #f0f4f8; border-radius: 12px; padding: 14px 18px; font-size: 13px; font-family: -apple-system, system-ui, sans-serif; display: flex; align-items: center; gap: 12px; pointer-events: auto; transform: translateY(20px); opacity: 0; transition: all 0.25s ease;";
+        toast.style.cssText = "background: #0d121d; border: 2px solid " + borderColor + "; box-shadow: 0 4px 20px #000; color: #f0f4f8; border-radius: 10px; padding: 12px 16px; font-size: 13px; font-family: -apple-system, system-ui, sans-serif; display: flex; align-items: center; gap: 10px; pointer-events: auto;";
 
         toast.innerHTML = "<span style=\"font-size:18px;\">" + icon + "</span><div style=\"flex:1;word-break:break-word;line-height:1.4;\">" + message + "</div>";
 
         container.appendChild(toast);
 
-        requestAnimationFrame(function () {
-            toast.style.transform = "translateY(0)";
-            toast.style.opacity = "1";
-        });
-
         if (duration > 0) {
             setTimeout(function () {
-                toast.style.transform = "translateY(10px)";
-                toast.style.opacity = "0";
-                setTimeout(function () { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 300);
+                if (toast.parentNode) toast.parentNode.removeChild(toast);
             }, duration);
         }
 
@@ -133,9 +126,7 @@
                 toast.innerHTML = "<span style=\"font-size:18px;\">" + icon + "</span><div style=\"flex:1;word-break:break-word;line-height:1.4;\">" + newMessage + "</div>";
             },
             remove: function () {
-                toast.style.transform = "translateY(10px)";
-                toast.style.opacity = "0";
-                setTimeout(function () { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 300);
+                if (toast.parentNode) toast.parentNode.removeChild(toast);
             }
         };
     }
@@ -159,7 +150,6 @@
 
         const entry = new window.int64(em.lo, em.hi);
 
-        // Copy bytes to RWX memory
         for (let o = 0; o < payload.length; o += 8) {
             let lo = 0, hi = 0;
             for (let k = 0; k < 4; ++k) lo |= (payload[o + k] || 0) << (8 * k);
@@ -167,7 +157,6 @@
             p.write8(entry.add32(o), new window.int64(lo >>> 0, hi >>> 0));
         }
 
-        // Spawn payload thread via pthread_create
         if (window.pthreadCreateAddr) {
             const thr = p.malloc ? p.malloc(8) : entry.add32(psize - 0x100);
             const rc = window.callAddr(window.pthreadCreateAddr, thr, 0, entry, 0).i32;
@@ -180,14 +169,13 @@
 
     // Payload Transmitter Engine
     async function transmitPayload(buffer, name, ip, port) {
-        const toast = showToast("Iniciando injeção de <b>" + name + "</b> (" + buffer.byteLength + " bytes)...", "info", 0);
+        const toast = showToast("Iniciando envio de <b>" + name + "</b> (" + buffer.byteLength + " bytes)...", "info", 0);
 
         try {
-            // Method 1: In-memory direct kernel execution if in active exploit context
             try {
                 const memOk = await executeInMemory(buffer, name);
                 if (memOk) {
-                    toast.update("<b>" + name + "</b> injetado e executado diretamente na memória RWX!", "success");
+                    toast.update("<b>" + name + "</b> injetado com sucesso na memória RWX!", "success");
                     setTimeout(toast.remove, 4500);
                     return;
                 }
@@ -195,7 +183,6 @@
                 console.warn("Direct memory execute fallback:", memErr);
             }
 
-            // Method 2: Direct syscall socket if provided
             if (typeof window.__sendPayloadDirect === "function") {
                 toast.update("Injetando <b>" + name + "</b> via syscall direta...", "info");
                 const sentBytes = await window.__sendPayloadDirect(buffer, port || DEFAULT_PORT);
@@ -204,7 +191,6 @@
                 return;
             }
 
-            // Method 3: Backend helper endpoint
             toast.update("Enviando <b>" + name + "</b> para <b>" + ip + ":" + port + "</b>...", "info");
             try {
                 const response = await fetch("/api/payload/send?ip=" + encodeURIComponent(ip) + "&port=" + encodeURIComponent(port) + "&name=" + encodeURIComponent(name), {
@@ -218,8 +204,7 @@
                 }
             } catch (netErr) { }
 
-            // Method 4: BinLoader Receiver Active Message
-            toast.update("Payload <b>" + name + "</b> carregado! Receptor ativo na porta " + port + ".<br>Se necessário, envie via PC: <code style=\"color:#00e5ff;\">nc " + ip + " " + port + " &lt; " + name + "</code>", "ok");
+            toast.update("Payload <b>" + name + "</b> pronto! Porta " + port + " pronta.<br>Se necessário, envie via PC: <code style=\"color:#00e5ff;\">nc " + ip + " " + port + " &lt; " + name + "</code>", "ok");
             setTimeout(toast.remove, 8000);
 
         } catch (e) {
@@ -239,12 +224,11 @@
             } catch (err) { }
 
             if (!resp || !resp.ok) {
-                // Fallback to payload.bin if specific preset not available
                 resp = await fetch("payload.bin");
             }
 
             if (!resp || !resp.ok) {
-                throw new Error("Arquivo " + payloadObj.file + " não encontrado no servidor.");
+                throw new Error("Arquivo " + payloadObj.file + " não encontrado.");
             }
 
             const buffer = await resp.arrayBuffer();
@@ -263,13 +247,6 @@
         const ip = (document.getElementById("target-ip") || {}).value || DEFAULT_IP;
         const port = parseInt((document.getElementById("target-port") || {}).value, 10) || p.port || DEFAULT_PORT;
         
-        // Add visual feedback on the clicked card
-        const card = document.querySelector(".payload-card[data-id=\"" + id + "\"]");
-        if (card) {
-            card.classList.add("sending");
-            setTimeout(function () { card.classList.remove("sending"); }, 1500);
-        }
-
         sendPresetPayload(p, ip, port);
     };
 
@@ -281,7 +258,7 @@
         const grid = menuEl.querySelector(".payload-grid");
         if (grid) {
             grid.innerHTML = PRESET_PAYLOADS.map(function (p) {
-                return "<a href=\"javascript:void(0)\" class=\"payload-card\" data-id=\"" + p.id + "\" role=\"button\" tabindex=\"0\" onclick=\"window.triggerSendPreset('" + p.id + "')\">"
+                return "<a href=\"javascript:void(0);\" class=\"payload-card\" data-id=\"" + p.id + "\" role=\"button\" tabindex=\"0\" onclick=\"window.triggerSendPreset('" + p.id + "'); return false;\">"
                     + "<div class=\"payload-card-top\">"
                     + "<span class=\"payload-icon\">" + p.icon + "</span>"
                     + "<span class=\"payload-tag\">" + p.tag + "</span>"
@@ -290,14 +267,17 @@
                     + "<div class=\"payload-desc\">" + p.desc + "</div>"
                     + "<div class=\"payload-btn\">"
                     + "<span>Injetar " + p.name + "</span>"
-                    + "<svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M5 13h11.86l-5.43 5.43 1.42 1.42L21.14 12l-8.29-7.85-1.42 1.42L16.86 11H5v2z\"/></svg>"
                     + "</div>"
                     + "</a>";
             }).join("");
 
-            // Add keyboard / gamepad support (Enter / Space / KeyCode 0 on PS4)
             const cards = grid.querySelectorAll(".payload-card");
             cards.forEach(function (card) {
+                card.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    const id = card.getAttribute("data-id");
+                    window.triggerSendPreset(id);
+                });
                 card.addEventListener("keydown", function (e) {
                     if (e.key === "Enter" || e.key === " " || e.keyCode === 13 || e.keyCode === 32 || e.keyCode === 0) {
                         e.preventDefault();
@@ -308,7 +288,6 @@
             });
         }
 
-        // File input handler
         const fileInput = document.getElementById("custom-payload-file");
         if (fileInput) {
             fileInput.addEventListener("change", function (e) {
@@ -335,8 +314,6 @@
             } catch (e) {
                 window.scrollTo(0, menuEl.offsetTop);
             }
-            const firstCard = menuEl.querySelector(".payload-card");
-            if (firstCard) { try { firstCard.focus(); } catch (err) { } }
         }
         showToast("Painel de Payloads ativado!", "ok", 3000);
     };
